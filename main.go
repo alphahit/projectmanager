@@ -9,10 +9,10 @@ import (
 func main() {
 	// Database configuration for MySQL
 	cfg := mysql.Config{
-		User:                 "root",
-		Passwd:               "mypassword",
-		Addr:                 "",
-		DBName:               "projectmanager",
+		User:                 Envs.DBUser,
+		Passwd:               Envs.DBPassword,
+		Addr:                 Envs.DBAddress,
+		DBName:               Envs.DBName,
 		Net:                  "tcp",
 		AllowNativePasswords: true,
 		ParseTime:            true,
