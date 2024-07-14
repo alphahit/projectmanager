@@ -32,5 +32,75 @@ func NewMySQLStorage(cfg mysql.Config) *MySQLStorage {
 
 // Init returns the existing database connection
 func (s *MySQLStorage) Init() (*sql.DB, error) {
+	//initialize the tables
+	if err := s.createProjectsTable(); err != nil {
+		return nil, err
+	}
+	if err := s.createUsersTable(); err != nil {
+		return nil, err
+	}
+	if err := s.creatTasksTable(); err != nil {
+		return nil, err
+	}
+
 	return s.db, nil // Returns the database connection stored in the MySQLStorage struct
+}
+func (s *MySQLStorage) createProjectsTable() error {
+	_, err := s.db.Exec(`
+		CREATE TABLE IF NOT EXISTS tasks (
+			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+			name VARCHAR(255) NOT NULL,
+			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+			PRIMARY KEY (id),
+		) ENGINE = InnoDB DEFAULT CHARSET=utf8
+	`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *MySQLStorage) createUsersTable() error {
+	_, err := s.db.Exec(`
+		CREATE TABLE IF NOT EXISTS tasks (
+			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+			email VARCHAR(255) NOT NULL,
+			firstName VARCHAR(255) NOT NULL,
+			lastName VARCHAR(255) NOT NULL,
+			password VARCHAR(255) NOT NULL,
+			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+			PRIMARY KEY (id),
+			UNIQUE KWY (email)
+		) ENGINE = InnoDB DEFAULT CHARSET=utf8
+	`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *MySQLStorage) creatTasksTable() error {
+	_, err := s.db.Exec(`
+		CREATE TABLE IF NOT EXISTS tasks (
+			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+			name VARCHAR(255) NOT NULL,
+			status ENUM('TODO', 'IN_PROGRESS', 'IN_TESTING', 'DONE') NOT NULL DEFAULT 'TODO',
+			projectId INT UNISIGNED NOT NULL,
+			assignedToID INT UNISIGNED NOT NULL,
+			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+			PRIMARY KEY (id),
+			FOREIGN KEY (assignedToID) REFERENCES users(id),
+			FOREIGN KEY (projectId) REFERENCES projects(id)
+		) ENGINE = InnoDB DEFAULT CHARSET=utf8
+	`)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

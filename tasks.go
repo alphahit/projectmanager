@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,7 +22,17 @@ func (s *TasksService) RegisterRoutes(r *mux.Router) {
 }
 
 func (s *TasksService) handleCreateTask(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+	defer r.Body.Close()
 
+	var task *Task
+	err = json.Unmarshal(body, &task)
+	if err != nil {
+
+	}
 }
 
 func (s *TasksService) handleGetTask(w http.ResponseWriter, r *http.Request) {
